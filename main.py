@@ -378,7 +378,7 @@ async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     name, quote = choice(DEMON_QUOTES)
 
     keyboard = InlineKeyboardMarkup([
-        [InlineKeyboardButton("🚀 Join Our Group", url="https://t.me/yourGroupLink")]
+        [InlineKeyboardButton("🚀 Join Our Group", url="https://t.me/thewarriorsreal")]
     ])
 
     text = f"🩸 {name}\n\n“{quote}”"
