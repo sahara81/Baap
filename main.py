@@ -1,9 +1,10 @@
 import os
 import asyncio
 import logging
+import threading
+from http.server import BaseHTTPRequestHandler, HTTPServer
 from random import choice
 
-from aiohttp import web
 from telegram import Update
 from telegram.ext import (
     ApplicationBuilder,
@@ -14,13 +15,16 @@ from telegram.ext import (
 )
 
 # ---------- LOGGING ----------
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    level=logging.INFO,
+)
 logger = logging.getLogger(__name__)
 
 # ---------- CONFIG ----------
 BOT_TOKEN = os.getenv("BOT_TOKEN", "")
 DELETE_DELAY = int(os.getenv("DELETE_DELAY", "300"))
-PORT = int(os.getenv("PORT", "10000"))
+PORT = int(os.getenv("PORT", "10000"))  # Render ka PORT yahi hota hai
 
 PROMO_PATTERNS = [
     "t.me/",
@@ -55,6 +59,28 @@ RANK_TIERS = {
     1500: ["⚡ LEGEND MODE", "💀 Final Boss Energy", "🌋 Group Myth"],
 }
 
+# ---------- HTTP KEEPALIVE SERVER (UPTIMEROBOT / RENDER) ----------
+
+class HealthHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        # Simple health endpoint
+        self.send_response(200)
+        self.send_header("Content-type", "text/plain; charset=utf-8")
+        self.end_headers()
+        self.wfile.write(b"Telegram auto-delete bot running.\n")
+
+    # Console pe har request ka log spam avoid karne ke liye
+    def log_message(self, format, *args):
+        return
+
+
+def run_http_server():
+    port = PORT
+    with HTTPServer(("", port), HealthHandler) as httpd:
+        logger.info(f"HTTP health server running on port {port}")
+        httpd.serve_forever()
+
+
 # ---------- HELPERS ----------
 
 async def delete_after(bot, chat_id: int, msg_id: int, delay: int):
@@ -65,9 +91,9 @@ async def delete_after(bot, chat_id: int, msg_id: int, delay: int):
         pass
 
 
-async def reply_autodelete(msg, context: ContextTypes.DEFAULT_TYPE, text: str):
+async def reply_autodelete(message, context: ContextTypes.DEFAULT_TYPE, text: str):
     delay = context.chat_data.get("delay", DELETE_DELAY)
-    sent = await msg.reply_text(text)
+    sent = await message.reply_text(text)
     asyncio.create_task(delete_after(context.bot, sent.chat.id, sent.message_id, delay))
     return sent
 
@@ -87,6 +113,7 @@ def get_random_rank(xp: int) -> str:
 def get_random_comment() -> str:
     return choice(SAVAGE_COMMENTS)
 
+
 # ---------- MAIN MESSAGE HANDLER ----------
 
 async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -95,15 +122,15 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = msg.chat.id
     text = (msg.text or msg.caption or "").lower()
 
-    # har message auto-delete
+    # Har message auto-delete (admin + user + bot replies sab)
     delay = context.chat_data.get("delay", DELETE_DELAY)
     asyncio.create_task(delete_after(context.bot, chat_id, msg.message_id, delay))
 
-    # bots ke liye: sirf delete, XP nahi
+    # Bot users ke liye: sirf delete, XP/filter/promo ignore
     if user.is_bot:
         return
 
-    # promo / link / @ spam
+    # --- PROMO / LINK / @ SPAM ---
     promo_mentions_enabled = context.chat_data.get("promo_mentions", True)
     is_link = any(pat in text for pat in PROMO_PATTERNS)
     is_tag_spam = promo_mentions_enabled and "@" in text
@@ -117,20 +144,21 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         asyncio.create_task(delete_after(context.bot, chat_id, msg.message_id, 1))
         return
 
-    # keyword filters
+    # --- KEYWORD FILTERS (word -> reply) ---
     filters_map = context.chat_data.get("filters", {})
     for word, response in filters_map.items():
         if word and word.lower() in text:
             await reply_autodelete(msg, context, response)
             break
 
-    # XP system
+    # --- XP SYSTEM ---
     xp_data = context.chat_data.get("xp", {})
     entry = xp_data.get(user.id, {"xp": 0, "name": user.full_name})
     entry["xp"] += 1
     entry["name"] = user.full_name
     xp_data[user.id] = entry
     context.chat_data["xp"] = xp_data
+
 
 # ---------- COMMANDS ----------
 
@@ -140,7 +168,7 @@ async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await reply_autodelete(
         update.message,
         context,
-        f"🤖 Savage Bot Active\n"
+        f"🤖 Savage Auto-Delete Bot Active\n"
         f"⏳ Auto-delete: {delay}s\n"
         f"📛 Anti @ spam: {'ON' if promo_mentions_enabled else 'OFF'}\n\n"
         "Commands:\n"
@@ -261,24 +289,17 @@ async def cmd_promostatus(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await reply_autodelete(update.message, context, f"📛 Promo tag filter: {'ON' if state else 'OFF'}")
 
 
-# ---------- KEEPALIVE (Render) ----------
+# ---------- MAIN (NO EVENT-LOOP CONFLICT) ----------
 
-async def keepalive():
-    app = web.Application()
-    app.router.add_get("/", lambda request: web.Response(text="Bot running"))
-    runner = web.AppRunner(app)
-    await runner.setup()
-    site = web.TCPSite(runner, "0.0.0.0", PORT)
-    await site.start()
-    logger.info(f"Keepalive server on port {PORT}")
-
-
-# ---------- MAIN ----------
-
-async def main():
+def main():
     if not BOT_TOKEN:
-        raise RuntimeError("BOT_TOKEN not set in environment.")
+        raise RuntimeError("BOT_TOKEN env var not set.")
 
+    # HTTP health server ko background thread me start karo
+    server_thread = threading.Thread(target=run_http_server, daemon=True)
+    server_thread.start()
+
+    # Telegram bot normal sync run_polling se chalega
     application = ApplicationBuilder().token(BOT_TOKEN).build()
 
     application.add_handler(CommandHandler("start", cmd_start))
@@ -293,12 +314,9 @@ async def main():
 
     application.add_handler(MessageHandler(filters.ALL, on_message))
 
-    # keepalive server background me
-    asyncio.create_task(keepalive())
-
-    # Telegram polling – single clean call
-    await application.run_polling(close_loop=False)
+    logger.info("Starting Telegram bot polling…")
+    application.run_polling()  # yahan koi asyncio.run nahi, isliye event-loop error nahi aayega
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
