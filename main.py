@@ -65,12 +65,11 @@ NSFW_PATTERNS = [
 NSFW_EMOJI = ["🍆", "🍑", "💦", "👅", "🔞", "👙", "💋", "🤤"]
 
 SAVAGE_COMMENTS = [
-    "XP dekhke lagta hai real life me free ho.",
-    "Bhai typing kam, presence zyada strong hai.",
-    "Tu message nahi, full energy bhejta hai.",
-    "Group tere bina bhi chal jaata, par itna mazedaar nahi hota.",
-    "XP strong hai, consistency aur strong ho rahi hai.",
-    "Tu silently active rehke bhi vibe bana deta hai.",
+    "XP dekhke lagta hai tu kaafi time se active hai.",
+    "Presence strong hai, group tero ko jaanta hai.",
+    "Tu message nahi, poori vibe bhejta hai.",
+    "Tere bina group chal toh jayega, par maza kam ho jayega.",
+    "Consistency OP, aise hi chat garam rakh.",
 ]
 
 RANK_TIERS = {
@@ -83,24 +82,21 @@ RANK_TIERS = {
     1500: ["Community Legend", "Mythical OG", "Unskippable Member"],
 }
 
-# XP achievements
 ACHIEVEMENT_TIERS = [
     {
         "xp": 50,
-        "title": "Active Human Being 💬",
+        "title": "Active Human 💬",
         "messages": [
-            "Ab group ne finally tujhe notice karna start kar diya hai.",
+            "Ab group ne finally tujhe notice karna start kiya hai.",
             "Good! Ab tu sirf read-only member nahi raha.",
-            "Nice! Ab tera naam logon ko yaad rehne laga hai.",
         ],
     },
     {
         "xp": 150,
         "title": "Chat Enthusiast 🎧",
         "messages": [
-            "Chat me energy sahi aa rahi hai, aise hi bolte reh.",
-            "Tumhara reply frequency dekhke lagta hai notifications ON hai.",
-            "Ab tum actual conversation ka part ban chuke ho.",
+            "Chat me energy sahi aa rahi hai, aise hi reply karta reh.",
+            "Tera notification rate high lag raha hai 😄",
         ],
     },
     {
@@ -108,8 +104,7 @@ ACHIEVEMENT_TIERS = [
         "title": "Vibe Distributor ✨",
         "messages": [
             "Ab group ka mood tumhare messages se set hota hai.",
-            "Log tumhare reply ke baad hi type karne ka decide karte hain.",
-            "Vibe stable hai, thanks to you.",
+            "Silent chat ko bhi tu active bana deta hai.",
         ],
     },
     {
@@ -117,8 +112,7 @@ ACHIEVEMENT_TIERS = [
         "title": "Friendly Regular ☕",
         "messages": [
             "Tumhare bina chat history adhuri lagti hai.",
-            "Ab tum waha ho jaha log bolte: 'haan ye toh hamesha rehta hai'.",
-            "Group ka permanent seat almost tumhara ho chuka hai.",
+            "Ab tumko dekh ke lagta hai permanent seat hai yaha.",
         ],
     },
     {
@@ -126,17 +120,15 @@ ACHIEVEMENT_TIERS = [
         "title": "Meme Specialist 🤣",
         "messages": [
             "Tumhare memes se log genuinely haste hain.",
-            "Joke fail ho jaye tab bhi log emoji bhejte, itna trust hai.",
-            "Meme supply stable rakho, group ko zaroorat hai.",
+            "Meme quality stable hai, supply continue rakho.",
         ],
     },
     {
         "xp": 2000,
         "title": "Group Pillar 🧱",
         "messages": [
-            "Jab tum kam active hote ho, group suspiciously quiet ho jata hai.",
-            "Tumhare bina group thoda khaali khaali sa lagta hai.",
-            "Ye level casual logon ko nahi milta, good consistency.",
+            "Jab tum kam active hote ho, group ajeeb se quiet ho jata hai.",
+            "Tumhare bina group thoda khaali khaali lagta hai.",
         ],
     },
     {
@@ -145,15 +137,13 @@ ACHIEVEMENT_TIERS = [
         "messages": [
             "Har purane member ko tumhara naam pata hota hai.",
             "Tum conversation ka hamesha hissa rahe ho.",
-            "XP dekhke lagta hai tum yaha ka old pillar ho.",
         ],
     },
     {
         "xp": 6000,
         "title": "Mythical OG 🐉",
         "messages": [
-            "Koi nahi jaanta tum kab join hue, bas itna ki tum hamesha se yaha the.",
-            "Tum offline ho toh bhi log tumhara naam leke baat karte hain.",
+            "Koi nahi jaanta tum kab join huye, bas itna ke tum hamesha se yahi the.",
             "OG level reach kar liya, ye sirf time + patience se possible hai.",
         ],
     },
@@ -163,27 +153,22 @@ ACHIEVEMENT_TIERS = [
         "messages": [
             "XP dekhke lagta hai tumhare aur group ke beech unlimited data ka contract hai.",
             "Tum chat ka permanent background process ho ab.",
-            "Leaderboard me tum nahi ho toh wo leaderboard adhoora lagta hai.",
         ],
     },
 ]
 
-# Demon Slayer Hinglish quotes for /start (normal users)
 DEMON_QUOTES = [
-    ("Tanjiro Kamado 🌊", "Girna galti nahi hoti... ruk jana hota hai."),
+    ("Tanjiro Kamado 🌊", "Girna galti nahi… ruk jana hota hai."),
     ("Nezuko Kamado 🔥", "Kabhi kabhi chup rehna bhi jawab hota hai."),
-    ("Zenitsu Agatsuma ⚡", "Darr sabko lagta hai, par himmat usko kehte jo rukta nahi."),
-    ("Inosuke Hashibira 🐗", "Raasta nahi mil raha? Toh naya bana daalo!"),
-    ("Kyojuro Rengoku 🔥", "Jab tak dil dhadakta hai, tab tak haar nahi hoti."),
-    ("Shinobu Kocho 🦋", "Muskurana hamesha khushi nahi… kabhi strength bhi hota hai."),
-    ("Giyu Tomioka ❄️", "Kuch baatein bolne ki nahi… samajhne ki hoti hain."),
-    ("Muzan Kibutsuji 💀", "Power dikhayi nahi… feel karayi jati hai."),
-    ("Akaza ⚔️", "Agar strong banna hai… toh takleef se dosti karni padegi."),
-    ("Mitsuri Kanroji 💗", "Na soft hona galat hai, na strong. Bas sahi waqt pe dono hona padta hai."),
+    ("Zenitsu ⚡", "Darr normal hai… rukna galat."),
+    ("Inosuke 🐗", "Raasta nahi? Toh naya tod ke bana."),
+    ("Rengoku 🔥", "Jab tak dil dhadke, haar nahi hoti."),
+    ("Shinobu 🦋", "Muskurana kabhi kabhi strength bhi hota hai."),
+    ("Muzan 💀", "Power dikhayi nahi, feel karayi jati hai."),
+    ("Akaza ⚔️", "Strong banna hai toh pain se dosti kar."),
 ]
 
-
-# ---------- HTTP KEEPALIVE SERVER (UPTIME ROBOT / RENDER) ----------
+# ---------- HTTP KEEPALIVE SERVER (UPTIMEROBOT / RENDER) ----------
 
 class HealthHandler(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -213,7 +198,11 @@ async def delete_after(bot, chat_id: int, msg_id: int, delay: int):
         pass
 
 
-async def reply_autodelete(message, context: ContextTypes.DEFAULT_TYPE, text: str, reply_markup=None):
+async def reply_autodelete(
+    message, context: ContextTypes.DEFAULT_TYPE,
+    text: str,
+    reply_markup: InlineKeyboardMarkup | None = None
+):
     delay = context.chat_data.get("delay", DELETE_DELAY)
     sent = await message.reply_text(text, reply_markup=reply_markup)
     asyncio.create_task(delete_after(context.bot, sent.chat.id, sent.message_id, delay))
@@ -254,19 +243,37 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     raw_text = (msg.text or msg.caption or "")
 
     text = raw_text.lower()
+
+    # brutal cleaning for NSFW detection
     clean = (
         text.replace(" ", "")
             .replace(".", "")
             .replace("*", "")
             .replace("_", "")
             .replace("-", "")
+            .replace("•", "")
+            .replace("/", "")
+            .replace("\\", "")
+            .replace("|", "")
+            .replace("$", "s")
+            .replace("5", "s")
+            .replace("@", "a")
+            .replace("4", "a")
+            .replace("3", "e")
+            .replace("1", "i")
+            .replace("!", "i")
+            .replace("0", "o")
+            .replace("€", "e")
+            .replace("🍆", "dick")
+            .replace("🍑", "ass")
+            .replace("💦", "cum")
     )
 
     # Auto delete every message
     delay = context.chat_data.get("delay", DELETE_DELAY)
     asyncio.create_task(delete_after(context.bot, chat_id, msg.message_id, delay))
 
-    # Ignore bots for XP / filters (sirf delete)
+    # Ignore other bots for XP/filter/NSFW (sirf delete)
     if user.is_bot:
         return
 
@@ -276,9 +283,8 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await reply_autodelete(
                 msg,
                 context,
-                "NSFW allowed nahi bhai, thoda tameez me reh.",
+                "NSFW allowed nahi bhai, thoda tameez me reh. 🚫",
             )
-            asyncio.create_task(delete_after(context.bot, chat_id, msg.message_id, 1))
             return
 
     # --- Anti promo / links / @ spam ---
@@ -290,9 +296,8 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await reply_autodelete(
             msg,
             context,
-            "Oye free promotion band kar, group koi billboard nahi.",
+            "Oye free promotion band kar, group koi billboard nahi. 😆",
         )
-        asyncio.create_task(delete_after(context.bot, chat_id, msg.message_id, 1))
         return
 
     # --- Keyword filters (word -> reply) ---
@@ -340,8 +345,7 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # ---------- COMMANDS ----------
 
 async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user = update.effective_user
-    if not user or not update.message:
+    if not update.message:
         return
 
     is_admin_user = await is_admin(update, context)
@@ -369,7 +373,7 @@ async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "• /nsfw on/off/status\n"
             "• /rank /top\n"
             "━━━━━━━━━━━━━━━━━━\n"
-            "You're the handler here."
+            "You're the handler here. 😎"
         )
         await reply_autodelete(update.message, context, text)
         return
@@ -567,4 +571,22 @@ async def cb_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if data == "menu_top":
         xp_data = context.chat_data.get("xp", {})
         if not xp_data:
-            await reply_autodelete(query.message, context
+            await reply_autodelete(query.message, context, "Empty leaderboard.")
+        else:
+            ranked = sorted(xp_data.values(), key=lambda x: x["xp"], reverse=True)[:10]
+            lines = [f"{i+1}. {u['name']} — {u['xp']} XP" for i, u in enumerate(ranked)]
+            await reply_autodelete(query.message, context, "Top Users:\n" + "\n".join(lines))
+
+    elif data == "menu_rank":
+        xp_data = context.chat_data.get("xp", {})
+        entry = xp_data.get(user.id, {"xp": 0, "name": user.full_name})
+        xp = entry["xp"]
+        rank = get_random_rank(xp)
+        comment = get_random_comment()
+        text = (
+            f"👤 {user.full_name}\n"
+            f"XP: {xp}\n"
+            f"Rank: {rank}\n\n"
+            f"Status: {comment}"
+        )
+        await 
