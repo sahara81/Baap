@@ -382,7 +382,7 @@ async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     name, quote = choice(DEMON_QUOTES)
 
     keyboard = InlineKeyboardMarkup([
-        [InlineKeyboardButton("🚀 Join Our Group", url="https://t.me/thewarriorsreal")]
+        [InlineKeyboardButton("🚀 Join Our Group", url="https://t.me/yourGroupLink")]
     ])
 
     text = f"🩸 {name}\n\n“{quote}”"
@@ -590,3 +590,56 @@ async def cb_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"Status: {comment}"
         )
         await 
+        reply_autodelete(query.message, context, text)
+
+    elif data == "menu_settings":
+        delay = context.chat_data.get("delay", DELETE_DELAY)
+        promo_state = "ON" if context.chat_data.get("promo_mentions", True) else "OFF"
+        nsfw_state = "ON" if context.chat_data.get("nsfw_enabled", True) else "OFF"
+        text = (
+            "Settings:\n"
+            f"- Auto-delete delay: {delay}s\n"
+            f"- Promo tag filter: {promo_state}\n"
+            f"- NSFW filter: {nsfw_state}"
+        )
+        await reply_autodelete(query.message, context, text)
+
+
+# ---------- MAIN (NO EVENT-LOOP CONFLICT) ----------
+
+def main():
+    if not BOT_TOKEN:
+        raise RuntimeError("BOT_TOKEN env var not set.")
+
+    # HTTP server for Render/UptimeRobot
+    server_thread = threading.Thread(target=run_http_server, daemon=True)
+    server_thread.start()
+
+    application = ApplicationBuilder().token(BOT_TOKEN).build()
+
+    # Commands
+    application.add_handler(CommandHandler("start", cmd_start))
+    application.add_handler(CommandHandler("menu", cmd_menu))
+    application.add_handler(CommandHandler("delay", cmd_delay))
+    application.add_handler(CommandHandler("filter", cmd_filter_add))
+    application.add_handler(CommandHandler("filterdel", cmd_filter_del))
+    application.add_handler(CommandHandler("filterlist", cmd_filter_list))
+    application.add_handler(CommandHandler("rank", cmd_rank))
+    application.add_handler(CommandHandler("top", cmd_top))
+    application.add_handler(CommandHandler("promomentions", cmd_promomentions))
+    application.add_handler(CommandHandler("promostatus", cmd_promostatus))
+    application.add_handler(CommandHandler("nsfw", cmd_nsfw))
+
+    # Menu callbacks
+    application.add_handler(CallbackQueryHandler(cb_menu, pattern=r"^menu_"))
+
+    # All messages handler
+    application.add_handler(MessageHandler(filters.ALL, on_message))
+
+    logger.info("Starting Telegram bot polling…")
+    application.run_polling()
+
+
+if __name__ == "__main__":
+    main()
+    
