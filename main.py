@@ -589,8 +589,7 @@ async def cb_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"Rank: {rank}\n\n"
             f"Status: {comment}"
         )
-        await 
-        reply_autodelete(query.message, context, text)
+        await reply_autodelete(query.message, context, text)
 
     elif data == "menu_settings":
         delay = context.chat_data.get("delay", DELETE_DELAY)
