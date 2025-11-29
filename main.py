@@ -198,11 +198,7 @@ async def delete_after(bot, chat_id: int, msg_id: int, delay: int):
         pass
 
 
-async def reply_autodelete(
-    message, context: ContextTypes.DEFAULT_TYPE,
-    text: str,
-    reply_markup: InlineKeyboardMarkup | None = None
-):
+async def reply_autodelete(message, context: ContextTypes.DEFAULT_TYPE, text: str, reply_markup=None):
     delay = context.chat_data.get("delay", DELETE_DELAY)
     sent = await message.reply_text(text, reply_markup=reply_markup)
     asyncio.create_task(delete_after(context.bot, sent.chat.id, sent.message_id, delay))
@@ -228,6 +224,14 @@ def get_random_rank(xp: int) -> str:
 
 def get_random_comment() -> str:
     return choice(SAVAGE_COMMENTS)
+
+
+async def force_delete(message, context: ContextTypes.DEFAULT_TYPE):
+    """Instant delete for NSFW/promo."""
+    try:
+        await context.bot.delete_message(message.chat.id, message.message_id)
+    except Exception:
+        pass
 
 
 # ---------- MAIN MESSAGE HANDLER ----------
@@ -269,22 +273,20 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             .replace("💦", "cum")
     )
 
-    # Auto delete every message
+    # Auto delete every message (after delay)
     delay = context.chat_data.get("delay", DELETE_DELAY)
     asyncio.create_task(delete_after(context.bot, chat_id, msg.message_id, delay))
 
-    # Ignore other bots for XP/filter/NSFW (sirf delete)
+    # Ignore other bots for XP/filter/NSFW (sirf delete scheduled)
     if user.is_bot:
         return
 
     # --- Anti NSFW (if enabled) ---
     if context.chat_data.get("nsfw_enabled", True):
         if any(nw in clean for nw in NSFW_PATTERNS) or any(e in text for e in NSFW_EMOJI):
-            await reply_autodelete(
-                msg,
-                context,
-                "NSFW allowed nahi bhai, thoda tameez me reh. 🚫",
-            )
+            await force_delete(msg, context)
+            warn = await msg.reply_text("🚫 NSFW detected. Message removed.")
+            asyncio.create_task(delete_after(context.bot, warn.chat.id, warn.message_id, 5))
             return
 
     # --- Anti promo / links / @ spam ---
@@ -293,11 +295,9 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     is_tag_spam = promo_mentions_enabled and "@" in text
 
     if is_link or is_tag_spam:
-        await reply_autodelete(
-            msg,
-            context,
-            "Oye free promotion band kar, group koi billboard nahi. 😆",
-        )
+        await force_delete(msg, context)
+        warn = await msg.reply_text("🚫 Free promotion allowed nahi. Chill.")
+        asyncio.create_task(delete_after(context.bot, warn.chat.id, warn.message_id, 5))
         return
 
     # --- Keyword filters (word -> reply) ---
@@ -579,6 +579,7 @@ async def cb_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     elif data == "menu_rank":
         xp_data = context.chat_data.get("xp", {})
+        entry = xp_data = context.chat_data.get("xp", {})
         entry = xp_data.get(user.id, {"xp": 0, "name": user.full_name})
         xp = entry["xp"]
         rank = get_random_rank(xp)
@@ -641,4 +642,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    
